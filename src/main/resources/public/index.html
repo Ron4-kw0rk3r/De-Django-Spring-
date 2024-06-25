@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background-color: #161929;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        main {
+            margin: 2rem auto;
+            max-width: 800px;
+            padding: 1rem;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .fork-contenedor {
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: #161929;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-check {
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background-color: white;
+            border-color: black;
+            color: black;
+            text-align: center;
+        }
+
+        .btn-primary:active {
+            background-color: #7a7979;
+            border-color: black;
+            color: black;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <header class="bg-primary text-white text-center py-3">
+        <h1> | Prueba Spring | </h1>
+    </header>
+    <main class="container mt-5">
+        <div class="fork-contenedor">
+            <h2>Bienvenido a mi pagina</h2>
+            <p>Spring MVC | desarrollado en Grovi - Gradel</p>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Agregar Usuario</h3>
+            </div>
+            <div class="card-body">
+                <form id="usuarioForm" action="/usuarios" method="post">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edad">Edad:</label>
+                        <input type="number" class="form-control" id="edad" name="edad" required>
+                    </div>
+                    <div class="form-group form-check">
+                        <label class="form-check-label" for="estado">Estado</label>
+                        <label class="switch">
+                            <input type="checkbox" id="estado" name="estado">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+                </form>
+                <div>
+                    <p> Tabla de Registros: -> </p>
+                    <table id="usuariosTable" class="table table-bordered table-striped" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead style="background-color: #161929; color: white;">
+                            <tr>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Nombre</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Edad</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.querySelector('form').addEventListener('submit', handleFormSubmit);
+
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Fetch all users and update the table
+            fetch('/getusuarios')
+                .then(response => response.json())
+                .then(users => {
+                    const usuariosTableBody = document.querySelector('#usuariosTable tbody');
+                                       usuariosTableBody.innerHTML = ''; // Clear existing rows
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.nombre}</td>
+                            <td>${user.edad}</td>
+                            <td>${user.estado ? 'True' : 'False'}</td>
+                        `;
+                        usuariosTableBody.appendChild(row);
+                    });
+
+                    // Display JSON data below the table
+                    const jsonDataDiv = document.createElement('div');
+                    jsonDataDiv.innerHTML = `<pre>${JSON.stringify(users, null, 2)}</pre>`;
+                    document.querySelector('main').appendChild(jsonDataDiv);
+                })
+                .catch(error => {
+                    alert('Error al obtener usuarios:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch and display users when the page loads
+            handleFormSubmit(new Event('submit'));
+        });
+    </script>
+</body>
+</html>
